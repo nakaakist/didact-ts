@@ -42,15 +42,31 @@ const createDom = (fiber) => {
 };
 
 const render = (element, parentDom) => {
-  nextUnitOfWork = {
+  wipRoot = {
     dom: parentDom,
     props: {
       children: [element],
     },
   };
+  nextUnitOfWork = wipRoot;
 };
 
 let nextUnitOfWork = null;
+let wipRoot = null;
+
+const commitRoot = () => {
+  commitWork(wipRoot.child);
+  wipRoot = null;
+};
+
+const commitWork = (fiber) => {
+  if (!fiber) return;
+
+  const domParent = fiber.parent.dom;
+  domParent.appendChild(fiber.dom);
+  commitWork(fiber.child);
+  commitWork(fiber.sibling);
+};
 
 const workLoop = (deadline) => {
   let shouldYield = false;
@@ -60,6 +76,11 @@ const workLoop = (deadline) => {
     // ref: https://developer.mozilla.org/en-US/docs/Web/API/IdleDeadline/timeRemaining
     shouldYield = deadline.timeRemaining() < 1;
   }
+
+  if (!nextUnitOfWork && wipRoot) {
+    commitRoot();
+  }
+
   requestIdleCallback(workLoop);
 };
 
@@ -69,9 +90,6 @@ const performUnitOfWork = (fiber) => {
   console.log("fiber", fiber);
   if (!fiber.dom) {
     fiber.dom = createDom(fiber);
-  }
-  if (fiber.parent) {
-    fiber.parent.dom.appendChild(fiber.dom);
   }
 
   const elements = fiber.props.children;
