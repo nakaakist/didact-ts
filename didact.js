@@ -18,9 +18,8 @@ const createTextElement = (text) => ({
   },
 });
 
-const render = (element, parentDom) => {
-  console.log(element);
-  const { type, props } = element;
+const createDom = (fiber) => {
+  const { type, props } = fiber;
   const isTextElement = type === "TEXT_ELEMENT";
   const dom = isTextElement
     ? document.createTextNode("")
@@ -39,9 +38,16 @@ const render = (element, parentDom) => {
       }
     });
 
-  parentDom.appendChild(dom);
+  return dom;
+};
 
-  element.props.children.forEach((child) => render(child, dom));
+const render = (element, parentDom) => {
+  nextUnitOfWork = {
+    dom: parentDom,
+    props: {
+      children: [element],
+    },
+  };
 };
 
 let nextUnitOfWork = null;
@@ -59,8 +65,49 @@ const workLoop = (deadline) => {
 
 requestIdleCallback(workLoop);
 
-const performUnitOfWork = (nextUnitOfWork) => {
-  // TODO
+const performUnitOfWork = (fiber) => {
+  console.log("fiber", fiber);
+  if (!fiber.dom) {
+    fiber.dom = createDom(fiber);
+  }
+  if (fiber.parent) {
+    fiber.parent.dom.appendChild(fiber.dom);
+  }
+
+  const elements = fiber.props.children;
+  let index = 0;
+  let prevSibling = null;
+
+  while (index < elements.length) {
+    const element = elements[index];
+    const newFiber = {
+      type: element.type,
+      props: element.props,
+      parent: fiber,
+      dom: null,
+    };
+
+    if (index === 0) {
+      fiber.child = newFiber;
+    } else {
+      prevSibling.sibling = newFiber;
+    }
+
+    prevSibling = newFiber;
+    index++;
+  }
+
+  if (fiber.child) {
+    return fiber.child;
+  }
+  let nextFiber = fiber;
+  while (nextFiber) {
+    if (nextFiber.sibling) {
+      return nextFiber.sibling;
+    }
+
+    nextFiber = nextFiber.parent;
+  }
 };
 
 const elem = <h1 style={{ color: "red" }}>hoge</h1>;
