@@ -31,6 +31,12 @@ const render = (element, parentDom) => {
     .filter(isProperty)
     .forEach((name) => {
       dom[name] = props[name];
+      if (name === "style") {
+        const style = props[name];
+        Object.keys(style).forEach((key) => {
+          dom.style[key] = style[key];
+        });
+      }
     });
 
   parentDom.appendChild(dom);
@@ -38,7 +44,7 @@ const render = (element, parentDom) => {
   element.props.children.forEach((child) => render(child, dom));
 };
 
-const elem = <h1>hoge</h1>;
+const elem = <h1 style={{ color: "red" }}>hoge</h1>;
 
 const root = document.getElementById("root");
 render(elem, root);
