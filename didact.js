@@ -44,6 +44,25 @@ const render = (element, parentDom) => {
   element.props.children.forEach((child) => render(child, dom));
 };
 
+let nextUnitOfWork = null;
+
+const workLoop = (deadline) => {
+  let shouldYield = false;
+  while (nextUnitOfWork && !shouldYield) {
+    nextUnitOfWork = performUnitOfWork(nextUnitOfWork);
+    // 現在のアイドル状態が終了するまでの時間見積もりを返す
+    // ref: https://developer.mozilla.org/en-US/docs/Web/API/IdleDeadline/timeRemaining
+    shouldYield = deadline.timeRemaining() < 1;
+  }
+  requestIdleCallback(workLoop);
+};
+
+requestIdleCallback(workLoop);
+
+const performUnitOfWork = (nextUnitOfWork) => {
+  // TODO
+};
+
 const elem = <h1 style={{ color: "red" }}>hoge</h1>;
 
 const root = document.getElementById("root");
