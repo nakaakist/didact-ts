@@ -10,6 +10,5 @@
         "jsxFactory": "createElement",
         "noUnusedLocals": true,
         "noUnusedParameters": true,
-        "outDir": "build"
     }
 }
