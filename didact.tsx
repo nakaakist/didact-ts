@@ -43,10 +43,10 @@ const render = (element, parentDom) => {
   nextUnitOfWork = wipRoot;
 };
 
-let nextUnitOfWork = null;
-let wipRoot = null;
-let currentRoot = null;
-let deletions = [];
+let nextUnitOfWork: any = null;
+let wipRoot: any = null;
+let currentRoot: any = null;
+let deletions: any[] = [];
 
 const commitRoot = () => {
   deletions.forEach(commitWork);
@@ -58,7 +58,7 @@ const commitRoot = () => {
 const isEvent = (key) => key.startsWith("on");
 const isProperty = (key) => key !== "children" && !isEvent(key);
 const isNew = (prev, next) => (key) => prev[key] !== next[key];
-const isGone = (prev, next) => (key) => !(key in next);
+const isGone = (_prev, next) => (key) => !(key in next);
 const updateDom = (dom, prevProps, nextProps) => {
   Object.keys(prevProps)
     .filter(isEvent)
@@ -158,8 +158,8 @@ const performUnitOfWork = (fiber) => {
   }
 };
 
-let wipFiber = null;
-let hookIndex = null;
+let wipFiber: any = null;
+let hookIndex: any = null;
 
 const updateFunctionComponent = (fiber) => {
   wipFiber = fiber;
@@ -176,7 +176,7 @@ const useState = (initial) => {
 
   const hook = {
     state: oldHook ? oldHook.state : initial,
-    queue: [],
+    queue: [] as any[],
   };
 
   const actions = oldHook ? oldHook.queue : [];
@@ -211,11 +211,11 @@ const updateHostComponent = (fiber) => {
 const reconcileChildren = (wipFiber, elements) => {
   let index = 0;
   let oldFiber = wipFiber.alternate && wipFiber.alternate.child;
-  let prevSibling = null;
+  let prevSibling: any = null;
 
   while (index < elements.length || oldFiber != null) {
     const element = elements[index];
-    let newFiber = null;
+    let newFiber: any = null;
     const sameType = oldFiber && element && element.type === oldFiber.type;
 
     if (sameType) {

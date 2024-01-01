@@ -1,0 +1,14 @@
+{
+    "compilerOptions": {
+        "target": "ESNext",
+        "lib": [
+            "ESNext",
+            "DOM",
+            "DOM.Iterable"
+        ],
+        "jsx": "react",
+        "jsxFactory": "createElement",
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+    },
+}

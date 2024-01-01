@@ -1,6 +1,6 @@
 # my-didact
 
-Understanding React architecture through tracing a [didact](https://github.com/pomber/didact) implementation.
+Understanding React architecture through tracing [didact](https://github.com/pomber/didact) implementation.
 
 ## run the app
 

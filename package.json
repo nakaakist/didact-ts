@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "swc didact.js -o build.js",
+    "build": "tsc --outFile build.js",
     "serve": "deno run --allow-net --allow-read https://deno.land/std/http/file_server.ts --port 4507"
   },
   "keywords": [],
@@ -12,6 +12,7 @@
   "license": "ISC",
   "devDependencies": {
     "@swc/cli": "^0.1.63",
-    "@swc/core": "^1.3.101"
+    "@swc/core": "^1.3.101",
+    "typescript": "^5.3.3"
   }
 }
