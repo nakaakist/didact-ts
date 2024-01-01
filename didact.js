@@ -167,9 +167,47 @@ const performUnitOfWork = (fiber) => {
   }
 };
 
+let wipFiber = null;
+let hookIndex = null;
+
 const updateFunctionComponent = (fiber) => {
+  wipFiber = fiber;
+  hookIndex = 0;
+  wipFiber.hooks = [];
+
   const children = [fiber.type(fiber.props)];
   reconcileChildren(fiber, children);
+};
+
+const useState = (initial) => {
+  const oldHook =
+    wipFiber && wipFiber.alternate && wipFiber.alternate.hooks[hookIndex];
+
+  const hook = {
+    state: oldHook ? oldHook.state : initial,
+    queue: [],
+  };
+
+  const actions = oldHook ? oldHook.queue : [];
+  actions.forEach((action) => {
+    hook.state = action(hook.state);
+    console.log("hook action executed", hook.state, action(hook.state));
+  });
+
+  const setState = (action) => {
+    hook.queue.push(action);
+    wipRoot = {
+      dom: currentRoot.dom,
+      props: currentRoot.props,
+      alternate: currentRoot,
+    };
+    nextUnitOfWork = wipRoot;
+    deletions = [];
+  };
+
+  wipFiber.hooks.push(hook);
+  hookIndex++;
+  return [hook.state, setState];
 };
 
 const updateHostComponent = (fiber) => {
@@ -230,7 +268,21 @@ const reconcileChildren = (wipFiber, elements) => {
 };
 
 const App = (props) => {
-  return <h1 style={{ color: "red" }}>{props.name}</h1>;
+  console.log("render app");
+
+  const [count, setCount] = useState(1);
+  return (
+    <h1
+      style={{ color: "red" }}
+      onClick={() => {
+        window.alert("hoge");
+        setCount(() => count + 1);
+      }}
+    >
+      {props.name}
+      {count}
+    </h1>
+  );
 };
 
 const elem = <App name="hoge" />;
