@@ -38,6 +38,8 @@ const createDom = (fiber) => {
       }
     });
 
+  console.log("dom created", fiber);
+
   return dom;
 };
 
@@ -96,19 +98,31 @@ const updateDom = (dom, prevProps, nextProps) => {
     .forEach((name) => (dom[name] = nextProps[name]));
 };
 
+const commitDeletion = (fiber, domParent) => {
+  if (fiber.dom) {
+    domParent.removeChild(fiber.dom);
+  } else {
+    commitDeletion(fiber.child, domParent);
+  }
+};
+
 const commitWork = (fiber) => {
+  console.log("commit", fiber);
   if (!fiber) return;
 
-  const domParent = fiber.parent.dom;
+  let domParentFiber = fiber.parent;
+  while (!domParentFiber.dom) {
+    domParentFiber = domParentFiber.parent;
+  }
+  const domParent = domParentFiber.dom;
   if (fiber.effectTag === "PLACEMENT" && fiber.dom != null) {
     domParent.appendChild(fiber.dom);
   } else if (fiber.effectTag === "DELETION") {
-    domParent.removeChild(fiber.dom);
+    commitDeletion(fiber, domParent);
   } else if (fiber.effectTag === "UPDATE" && fiber.dom != null) {
     updateDom(fiber.dom, fiber.alternate.props, fiber.props);
   }
 
-  domParent.appendChild(fiber.dom);
   commitWork(fiber.child);
   commitWork(fiber.sibling);
 };
@@ -133,12 +147,12 @@ requestIdleCallback(workLoop);
 
 const performUnitOfWork = (fiber) => {
   console.log("fiber", fiber);
-  if (!fiber.dom) {
-    fiber.dom = createDom(fiber);
-  }
 
-  const elements = fiber.props.children;
-  reconcileChildren(fiber, elements);
+  if (fiber.type instanceof Function) {
+    updateFunctionComponent(fiber);
+  } else {
+    updateHostComponent(fiber);
+  }
 
   if (fiber.child) {
     return fiber.child;
@@ -151,6 +165,18 @@ const performUnitOfWork = (fiber) => {
 
     nextFiber = nextFiber.parent;
   }
+};
+
+const updateFunctionComponent = (fiber) => {
+  const children = [fiber.type(fiber.props)];
+  reconcileChildren(fiber, children);
+};
+
+const updateHostComponent = (fiber) => {
+  if (!fiber.dom) {
+    fiber.dom = createDom(fiber);
+  }
+  reconcileChildren(fiber, fiber.props.children);
 };
 
 const reconcileChildren = (wipFiber, elements) => {
@@ -203,7 +229,11 @@ const reconcileChildren = (wipFiber, elements) => {
   }
 };
 
-const elem = <h1 style={{ color: "red" }}>hoge</h1>;
+const App = (props) => {
+  return <h1 style={{ color: "red" }}>{props.name}</h1>;
+};
+
+const elem = <App name="hoge" />;
 
 const root = document.getElementById("root");
 render(elem, root);
