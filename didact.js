@@ -264,7 +264,7 @@ const App = (props) => {
   const [count, setCount] = useState(1);
   return (
     <h1
-      style={{ color: "red" }}
+      style="color: red;"
       onClick={() => {
         setCount(() => count + 1);
       }}
