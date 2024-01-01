@@ -275,7 +275,7 @@ const App = (props) => {
   );
 };
 
-const elem = <App name="hoge" />;
+const elem = <App name="Count: " />;
 
 const root = document.getElementById("root");
 render(elem, root);

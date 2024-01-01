@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "swc didact.js -o build.js",
-    "serve": "deno run --allow-net --allow-read https://deno.land/std/http/file_server.ts"
+    "serve": "deno run --allow-net --allow-read https://deno.land/std/http/file_server.ts --port 4507"
   },
   "keywords": [],
   "author": "",
