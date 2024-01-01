@@ -1,6 +1,11 @@
 # my-didact
 
-Understanding React architecture through tracing [didact](https://github.com/pomber/didact) implementation.
+Understanding React architecture through tracing the [didact](https://github.com/pomber/didact) implementation.
+
+The differences from the original didact repo are:
+
+- written in TypeScript
+- sample app can be run in browser
 
 ## run the app
 
@@ -12,7 +17,7 @@ prerequisites: Node.js, pnpm, and Deno must be installed.
 pnpm i
 ```
 
-2. transpile javascript:
+2. compile:
 
 ```bash
 pnpm build
