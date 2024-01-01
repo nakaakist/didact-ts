@@ -1,4 +1,4 @@
-# my-didact
+# didact-ts
 
 Understanding React architecture through tracing the [didact](https://github.com/pomber/didact) implementation.
 
