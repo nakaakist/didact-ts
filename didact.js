@@ -25,18 +25,7 @@ const createDom = (fiber) => {
     ? document.createTextNode("")
     : document.createElement(type);
 
-  const isProperty = (key) => key !== "children";
-  Object.keys(props)
-    .filter(isProperty)
-    .forEach((name) => {
-      dom[name] = props[name];
-      if (name === "style") {
-        const style = props[name];
-        Object.keys(style).forEach((key) => {
-          dom.style[key] = style[key];
-        });
-      }
-    });
+  updateDom(dom, {}, props);
 
   console.log("dom created", fiber);
 
@@ -89,13 +78,15 @@ const updateDom = (dom, prevProps, nextProps) => {
     .filter(isNew(prevProps, nextProps))
     .forEach((name) => {
       const eventType = name.toLowerCase().substring(2);
-      dom.addEventListener(eventType, prevProps[name]);
+      dom.addEventListener(eventType, nextProps[name]);
     });
 
   Object.keys(nextProps)
     .filter(isProperty)
     .filter(isNew(prevProps, nextProps))
     .forEach((name) => (dom[name] = nextProps[name]));
+
+  console.log("dom updated", dom, prevProps, nextProps);
 };
 
 const commitDeletion = (fiber, domParent) => {
@@ -275,7 +266,6 @@ const App = (props) => {
     <h1
       style={{ color: "red" }}
       onClick={() => {
-        window.alert("hoge");
         setCount(() => count + 1);
       }}
     >
